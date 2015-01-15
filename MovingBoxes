@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<meta charset="utf-8">
+
+	<title>Moving Boxes</title>
+	
+	<!-- Required CSS -->
+	<link href="css/movingboxes.css" rel="stylesheet">
+	<!--[if lt IE 9]>
+	<link href="css/movingboxes-ie.css" rel="stylesheet" media="screen" />
+	<![endif]-->
+	
+	<!-- Required script -->
+	<script src="js/jquery.min.js"></script>
+	<script src="js/jquery.movingboxes.js"></script>
+
+	<!-- Demo only -->
+	<link href="css/demo.css" rel="stylesheet">
+
+	<style>
+		/* Dimensions set via css in MovingBoxes version 2.2.2+ */
+		#slider { width: 500px; }
+		#slider li { width: 250px; }
+	</style>
+
+	<script>
+	$(function(){
+
+		$('#slider').movingBoxes({
+			startPanel   : 1,      // start with this panel
+			wrap         : true,  // if true, the panel will infinitely loop
+			buildNav     : true,   // if true, navigation links will be added
+			navFormatter : function(){ return "&#9679;"; } // function which returns the navigation text for each panel
+		});	
+		
+		/* Add Swipe to Moving Boxes */
+		var maxTime = 1000,
+		// allow movement if < 1000 ms (1 sec)
+		maxDistance = 50,
+		// swipe movement of 50 pixels triggers the swipe
+
+		target = $('#slider'),
+		api = target.data('movingBoxes'),
+		startX = 0,
+		startTime = 0,
+		touch = "ontouchend" in document,
+		startEvent = (touch) ? 'touchstart' : 'mousedown',
+		moveEvent = (touch) ? 'touchmove' : 'mousemove',
+		endEvent = (touch) ? 'touchend' : 'mouseup';
+
+		target.on(startEvent, function(e) {
+			// prevent image drag (Firefox)
+			e.preventDefault();
+			startTime = e.timeStamp;
+			startX = e.originalEvent.touches ? e.originalEvent.touches[0].pageX : e.pageX;
+		}).on(endEvent, function(e) {
+			startTime = 0;
+			startX = 0;
+		}).on(moveEvent, function(e) {
+			e.preventDefault();
+			var currentX = e.originalEvent.touches ? e.originalEvent.touches[0].pageX : e.pageX,
+				currentDistance = (startX === 0) ? 0 : Math.abs(currentX - startX),
+				// allow if movement < 1 sec
+				currentTime = e.timeStamp;
+			if (startTime !== 0 && currentTime - startTime < maxTime && currentDistance > maxDistance) {
+				if (currentX < startX) {
+					// swipe left code here
+					api.goForward();
+				}
+				if (currentX > startX) {
+					// swipe right code here
+					api.goBack();
+				}
+				startTime = 0;
+				startX = 0;
+			}
+		});
+		
+	});
+	</script>
+
+</head>
+
+<body>
+
+	<div id="wrapper">
+
+		<h1 class="demo-title">Moving Boxes with Swipe</h1>
+
+		<!-- MovingBoxes Slider -->
+		<ul id="slider">
+
+			<li>
+				<img src="images/1.jpg" alt="picture">				
+			</li>
+
+			<li>
+				<img src="images/2.jpg" alt="picture">
+			</li>
+
+			<li>
+				<img src="images/3.jpg" alt="picture">
+			</li>
+
+			<li>
+				<img src="images/4.jpg" alt="picture">
+			</li>
+
+			<li>
+				<img src="images/5.jpg" alt="picture">
+			</li>
+
+			<li>
+				<img src="images/6.jpg" alt="picture">
+			</li>
+
+		</ul><!-- end Slider #1 -->
+
+	</div><!-- end wrapper -->
+
+</body>
+
+</html>
